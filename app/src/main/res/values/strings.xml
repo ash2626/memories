@@ -3,5 +3,6 @@
     <string name="title_activity_main">Memories</string>
     <string name="server_base_url">192.168.1.6/owncloud</string>
     <string name="username">ash2626</string>
-    <string name="password">football1</string>
+    <string name="password">Sycam0re</string>
+    <string name="eventID">John + Joanne 2015</string>
 </resources>

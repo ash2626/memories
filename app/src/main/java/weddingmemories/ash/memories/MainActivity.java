@@ -15,9 +15,6 @@ import com.owncloud.android.lib.common.OwnCloudClientFactory;
 import com.owncloud.android.lib.common.OwnCloudCredentialsFactory;
 import com.owncloud.android.lib.common.network.NetworkUtils;
 
-import org.apache.commons.httpclient.protocol.Protocol;
-import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
-
 import java.security.GeneralSecurityException;
 
 
@@ -50,30 +47,9 @@ public class MainActivity extends AppCompatActivity {
         mUser = getString(R.string.username);
         mPass = getString(R.string.password);
 
-        Protocol pr = Protocol.getProtocol("https");
-        if (pr == null || !(pr.getSocketFactory() instanceof SelfSignedConfidentSslSocketFactory)) {
-            try {
-                ProtocolSocketFactory psf = new SelfSignedConfidentSslSocketFactory();
-                Protocol.registerProtocol(
-                        "https",
-                        new Protocol("https", psf, 443));
-
-            } catch (GeneralSecurityException e) {
-                Log.e(TAG, "Self-signed confident SSL context could not be loaded");
-            }
-        }
 
         mClient = new OwnCloudClient(Uri.parse(mServerUri), NetworkUtils.getMultiThreadedConnManager());
-        mClient.setDefaultTimeouts(
-                OwnCloudClientFactory.DEFAULT_DATA_TIMEOUT,
-                OwnCloudClientFactory.DEFAULT_CONNECTION_TIMEOUT);
-        mClient.setFollowRedirects(true);
-        mClient.setCredentials(
-                OwnCloudCredentialsFactory.newBasicCredentials(
-                        mUser,
-                        mPass
-                )
-        );
+        mClient.setCredentials(OwnCloudCredentialsFactory.newBasicCredentials(mUser, mPass));
         mClient.setBaseUri(Uri.parse(mServerUri));
 
         Log.d("MemoriesApp", "onCreate finished, ownCloud setup complete");
