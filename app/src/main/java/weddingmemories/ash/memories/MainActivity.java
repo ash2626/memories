@@ -1,8 +1,10 @@
 package weddingmemories.ash.memories;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -16,6 +18,8 @@ import com.owncloud.android.lib.common.OwnCloudCredentialsFactory;
 import com.owncloud.android.lib.common.network.NetworkUtils;
 
 import java.security.GeneralSecurityException;
+
+import static android.R.id.edit;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -38,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         instPhotoObs = new MyObserver(this.getApplicationContext());
         Log.d("MemoriesApp", "onCreate Add ContentObserver");
         this.getApplicationContext().getContentResolver().registerContentObserver(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, false, instPhotoObs);
@@ -52,8 +57,11 @@ public class MainActivity extends AppCompatActivity {
         mClient.setCredentials(OwnCloudCredentialsFactory.newBasicCredentials(mUser, mPass));
         mClient.setBaseUri(Uri.parse(mServerUri));
 
+
+
         Log.d("MemoriesApp", "onCreate finished, ownCloud setup complete");
     }
+
 
     @Override
     protected void onDestroy() {
@@ -62,6 +70,29 @@ public class MainActivity extends AppCompatActivity {
         this.getApplicationContext().getContentResolver().unregisterContentObserver(instPhotoObs);
 
         Log.d("MemoriesApp", "onDestroy Remove ContentObserver");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+
+
+        SharedPreferences.Editor edit1 = prefs.edit();
+        edit1.putBoolean(getString(R.string.pref_previously_started), Boolean.FALSE);
+        edit1.apply();
+
+        boolean previouslyStarted = prefs.getBoolean(getString(R.string.pref_previously_started), false);
+        if(!previouslyStarted) {
+            SharedPreferences.Editor edit = prefs.edit();
+            edit.putBoolean(getString(R.string.pref_previously_started), Boolean.TRUE);
+            edit.apply();
+            //add method call to activity logon
+            AccountManagement myAccountManagement = new AccountManagement();
+            myAccountManagement.execute();
+        }
+
     }
 
     public void takePictures(View view){

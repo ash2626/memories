@@ -5,4 +5,6 @@
     <string name="username">ash2626</string>
     <string name="password">Sycam0re</string>
     <string name="eventID">John + Joanne 2015</string>
+    <string name="pref_previously_started">false</string>
+
 </resources>
