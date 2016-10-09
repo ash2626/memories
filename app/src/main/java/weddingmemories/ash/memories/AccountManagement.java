@@ -17,7 +17,7 @@ import static weddingmemories.ash.memories.R.string.username;
  * Created by joannewebster3 on 02/10/2016.
  */
 
-public class AccountManagement extends AsyncTask {
+public class AccountManagement extends AsyncTask<String,Void,Void> {
 
 
     public AccountManagement() {
@@ -25,10 +25,13 @@ public class AccountManagement extends AsyncTask {
     }
 
     @Override
-    protected Object doInBackground(Object[] objects) {
-        String dataUrl = "http://192.168.1.6/owncloud/ocs/v1.php/cloud/users";
-        String dataUrlParameters = "-d userid=\"Frank\" -d password=\"frankspassword\"";
-        String basicAuth = "Basic " + Base64.encodeToString("ash2626:Sycam0re".getBytes(), Base64.URL_SAFE|Base64.NO_WRAP);
+    protected  Void doInBackground(String... strings) {
+        String dataUrl = strings[0];
+        String dataUrlParameters = strings[1];
+        String basicAuth = "Basic " + Base64.encodeToString(strings[2].getBytes(), Base64.URL_SAFE|Base64.NO_WRAP);
+
+        Log.d("MemoriesApp", dataUrl+dataUrlParameters);
+
         URL url;
         HttpURLConnection connection = null;
         try {

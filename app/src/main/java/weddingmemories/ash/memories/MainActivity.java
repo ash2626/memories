@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.owncloud.android.lib.common.OwnCloudClient;
 import com.owncloud.android.lib.common.OwnCloudClientFactory;
@@ -35,7 +36,6 @@ public class MainActivity extends AppCompatActivity {
     private String mUser;
     private String mPass;
     private OwnCloudClient mClient;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +62,6 @@ public class MainActivity extends AppCompatActivity {
         Log.d("MemoriesApp", "onCreate finished, ownCloud setup complete");
     }
 
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -78,34 +77,36 @@ public class MainActivity extends AppCompatActivity {
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 
-
-        SharedPreferences.Editor edit1 = prefs.edit();
-        edit1.putBoolean(getString(R.string.pref_previously_started), Boolean.FALSE);
-        edit1.apply();
+        //remove once signup works!!
+        //SharedPreferences.Editor edit1 = prefs.edit();
+        //edit1.putBoolean(getString(R.string.pref_previously_started), Boolean.FALSE);
+        //edit1.apply();
 
         boolean previouslyStarted = prefs.getBoolean(getString(R.string.pref_previously_started), false);
         if(!previouslyStarted) {
+
+            //shared preferences is now set to true meaning this activity will only run on first app use
             SharedPreferences.Editor edit = prefs.edit();
             edit.putBoolean(getString(R.string.pref_previously_started), Boolean.TRUE);
             edit.apply();
-            //add method call to activity logon
-            AccountManagement myAccountManagement = new AccountManagement();
-            myAccountManagement.execute();
+
+            //Call Signup Activity
+            Intent start_activity = new Intent(getApplicationContext(), Signup.class);
+            startActivityForResult(start_activity, 1);
         }
 
     }
 
     public void takePictures(View view){
-        Intent intent = new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA);
+        Intent takepictures = new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA);
 
         /*fileUri = getOutputMediaFileUri(MEDIA_TYPE_IMAGE); // create a file to save the image
         intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name*/
 
         Log.d("MemoriesApp", "Pictures Started");
         // start the image capture Intent
-        startActivity(intent);
+        startActivity(takepictures);
     }
-
 
    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -128,4 +129,16 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode==1)
+        {
+            Toast.makeText(this, "activity returned", Toast.LENGTH_LONG).show();
+            //Add user to owncloud
+            AccountManagement myAccountManagement = new AccountManagement();
+            myAccountManagement.execute(getString(R.string.server_base_url)+"/ocs/v1.php/cloud/users","userid="+data.getStringExtra("userid")+"&password="+data.getStringExtra("password"),getString(R.string.username)+":"+getString(R.string.password));
+        }
+    }
 }
