@@ -3,6 +3,7 @@ package weddingmemories.ash.memories;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
@@ -135,10 +136,11 @@ public class MainActivity extends AppCompatActivity {
 
         if (requestCode==1)
         {
-            Toast.makeText(this, "activity returned", Toast.LENGTH_LONG).show();
             //Add user to owncloud
             AccountManagement myAccountManagement = new AccountManagement();
-            myAccountManagement.execute(getString(R.string.server_base_url)+"/ocs/v1.php/cloud/users","userid="+data.getStringExtra("userid")+"&password="+data.getStringExtra("password"),getString(R.string.username)+":"+getString(R.string.password));
+            myAccountManagement.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,getString(R.string.server_base_url)+"/ocs/v1.php/cloud/users","userid="+data.getStringExtra("userid")+"&password="+data.getStringExtra("password"),getString(R.string.username)+":"+getString(R.string.password));
+            AccountManagement myAccountManagement2 = new AccountManagement();
+            myAccountManagement2.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR,getString(R.string.server_base_url)+"/ocs/v1.php/cloud/users/"+data.getStringExtra("userid")+"/groups","groupid="+data.getStringExtra("groupid"),getString(R.string.username)+":"+getString(R.string.password));
         }
     }
 }
