@@ -136,11 +136,18 @@ public class MainActivity extends AppCompatActivity {
 
         if (requestCode==1)
         {
+            String[][] tasks = new String[2][3];
+            tasks[0][0] = getString(R.string.server_base_url)+"/ocs/v1.php/cloud/users";
+            tasks[0][1] = "userid="+data.getStringExtra("userid")+"&password="+data.getStringExtra("password");
+            tasks[0][2] = getString(R.string.username)+":"+getString(R.string.password);
+
+            tasks[1][0] = getString(R.string.server_base_url)+"/ocs/v1.php/cloud/users/"+data.getStringExtra("userid")+"/groups";
+            tasks[1][1] = "groupid="+data.getStringExtra("groupid");
+            tasks[1][2] = getString(R.string.username)+":"+getString(R.string.password);
+
             //Add user to owncloud
             AccountManagement myAccountManagement = new AccountManagement();
-            myAccountManagement.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,getString(R.string.server_base_url)+"/ocs/v1.php/cloud/users","userid="+data.getStringExtra("userid")+"&password="+data.getStringExtra("password"),getString(R.string.username)+":"+getString(R.string.password));
-            AccountManagement myAccountManagement2 = new AccountManagement();
-            myAccountManagement2.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR,getString(R.string.server_base_url)+"/ocs/v1.php/cloud/users/"+data.getStringExtra("userid")+"/groups","groupid="+data.getStringExtra("groupid"),getString(R.string.username)+":"+getString(R.string.password));
+            myAccountManagement.execute(tasks);
         }
     }
 }
