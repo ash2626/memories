@@ -28,12 +28,12 @@ public class AccountManagement extends AsyncTask<String[][],Void,Void> {
     @Override
     protected  Void doInBackground(String[][]... strings) {
 
-        int i = 0;
+        String[][] passed = strings[0];
 
-        while(strings[i][0].toString() != null ) {
-            String dataUrl = strings[i][0].toString();
-            String dataUrlParameters = strings[i][1].toString();
-            String basicAuth = "Basic " + Base64.encodeToString(strings[i][2].toString().getBytes(), Base64.URL_SAFE | Base64.NO_WRAP);
+        for(int i = 0; i <= strings.length-1; i++ ) {
+            String dataUrl = passed[i][0].toString();
+            String dataUrlParameters = passed[i][1].toString();
+            String basicAuth = "Basic " + Base64.encodeToString(passed[i][2].toString().getBytes(), Base64.URL_SAFE | Base64.NO_WRAP);
 
             Log.d("MemoriesApp", dataUrl + dataUrlParameters);
 

@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -38,6 +39,8 @@ public class MainActivity extends AppCompatActivity {
     private String mPass;
     private OwnCloudClient mClient;
 
+    SharedPreferences prefs;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,7 +61,13 @@ public class MainActivity extends AppCompatActivity {
         mClient.setCredentials(OwnCloudCredentialsFactory.newBasicCredentials(mUser, mPass));
         mClient.setBaseUri(Uri.parse(mServerUri));
 
+        //move to onresume once signup works!!
+        prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 
+        //remove once signup works!!
+        SharedPreferences.Editor edit1 = prefs.edit();
+        edit1.putBoolean(getString(R.string.pref_previously_started), Boolean.FALSE);
+        edit1.apply();
 
         Log.d("MemoriesApp", "onCreate finished, ownCloud setup complete");
     }
@@ -75,13 +84,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-
-        //remove once signup works!!
-        //SharedPreferences.Editor edit1 = prefs.edit();
-        //edit1.putBoolean(getString(R.string.pref_previously_started), Boolean.FALSE);
-        //edit1.apply();
 
         boolean previouslyStarted = prefs.getBoolean(getString(R.string.pref_previously_started), false);
         if(!previouslyStarted) {
@@ -136,18 +138,25 @@ public class MainActivity extends AppCompatActivity {
 
         if (requestCode==1)
         {
-            String[][] tasks = new String[2][3];
-            tasks[0][0] = getString(R.string.server_base_url)+"/ocs/v1.php/cloud/users";
-            tasks[0][1] = "userid="+data.getStringExtra("userid")+"&password="+data.getStringExtra("password");
-            tasks[0][2] = getString(R.string.username)+":"+getString(R.string.password);
+            String[][] tasks = new String[][]
+            {
+                    {
+                        getString(R.string.server_base_url)+"/ocs/v1.php/cloud/users",
+                        "userid="+data.getStringExtra("userid")+"&password="+data.getStringExtra("password"),
+                        getString(R.string.username)+":"+getString(R.string.password)
+                    },
+                    {
+                        getString(R.string.server_base_url)+"/ocs/v1.php/cloud/users/"+data.getStringExtra("userid")+"/groups",
+                        "groupid="+data.getStringExtra("groupid"),
+                        getString(R.string.username)+":"+getString(R.string.password)
+                    }
 
-            tasks[1][0] = getString(R.string.server_base_url)+"/ocs/v1.php/cloud/users/"+data.getStringExtra("userid")+"/groups";
-            tasks[1][1] = "groupid="+data.getStringExtra("groupid");
-            tasks[1][2] = getString(R.string.username)+":"+getString(R.string.password);
+            };
 
             //Add user to owncloud
             AccountManagement myAccountManagement = new AccountManagement();
             myAccountManagement.execute(tasks);
+
         }
     }
 }
