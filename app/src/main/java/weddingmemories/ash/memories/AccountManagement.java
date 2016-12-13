@@ -10,6 +10,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.HttpURLConnection;
+import java.util.ArrayList;
+import java.util.List;
 
 import static android.util.Base64.URL_SAFE;
 import static weddingmemories.ash.memories.R.string.username;
@@ -20,6 +22,7 @@ import static weddingmemories.ash.memories.R.string.username;
 
 public class AccountManagement extends AsyncTask<String[][],Void,Void> {
 
+    List mylist;
 
     public AccountManagement() {
 
@@ -30,7 +33,7 @@ public class AccountManagement extends AsyncTask<String[][],Void,Void> {
 
         String[][] passed = strings[0];
 
-        for(int i = 0; i <= strings.length-1; i++ ) {
+        for (int i = 0; i < passed.length; i++) {
             String dataUrl = passed[i][0].toString();
             String dataUrlParameters = passed[i][1].toString();
             String basicAuth = "Basic " + Base64.encodeToString(passed[i][2].toString().getBytes(), Base64.URL_SAFE | Base64.NO_WRAP);
@@ -62,6 +65,10 @@ public class AccountManagement extends AsyncTask<String[][],Void,Void> {
                     response.append('\r');
                 }
                 rd.close();
+
+                //XMLparser myparse = new XMLparser();
+                //mylist =  myparse.parse(is);
+
                 String responseStr = response.toString();
                 Log.d("MemoriesApp", responseStr);
 
@@ -75,8 +82,6 @@ public class AccountManagement extends AsyncTask<String[][],Void,Void> {
                     connection.disconnect();
                 }
             }
-
-            i++;
         }
 
         return null;
