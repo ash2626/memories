@@ -11,6 +11,8 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import com.owncloud.android.lib.resources.files.UploadRemoteFileOperation;
+
 /**
  * Created by joannewebster3 on 01/10/2016.
  */
@@ -35,6 +37,11 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         if (activeNetwork != null) { // connected to the internet
             if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
+
+                UploadRemoteFileOperation UploadOperation = new UploadRemoteFileOperation();
+                UploadOperation.execute();
+
+
                 // connected to wifi
                 Toast.makeText(mContext, activeNetwork.getTypeName(), Toast.LENGTH_SHORT).show();
             } else if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) {
