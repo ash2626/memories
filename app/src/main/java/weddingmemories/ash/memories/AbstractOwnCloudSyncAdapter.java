@@ -1,3 +1,4 @@
+
 /**
  *   ownCloud Android client application
  *
@@ -19,29 +20,32 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
-package com.owncloud.android.syncadapter;
-
-import java.io.IOException;
-
-import com.owncloud.android.datamodel.FileDataStorageManager;
-import com.owncloud.android.lib.common.accounts.AccountUtils.AccountNotFoundException;
-import com.owncloud.android.lib.common.OwnCloudAccount;
-import com.owncloud.android.lib.common.OwnCloudClient;
-import com.owncloud.android.lib.common.OwnCloudClientManagerFactory;
+package weddingmemories.ash.memories;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.accounts.AuthenticatorException;
-import android.accounts.OperationCanceledException;
-import android.content.AbstractThreadedSyncAdapter;
-import android.content.ContentProviderClient;
-import android.content.Context;
+
+
+        import java.io.IOException;
+
+        import com.owncloud.android.datamodel.FileDataStorageManager;
+        import com.owncloud.android.lib.common.accounts.AccountUtils.AccountNotFoundException;
+        import com.owncloud.android.lib.common.OwnCloudAccount;
+        import com.owncloud.android.lib.common.OwnCloudClient;
+        import com.owncloud.android.lib.common.OwnCloudClientManagerFactory;
+
+        import android.accounts.Account;
+        import android.accounts.AccountManager;
+        import android.accounts.AuthenticatorException;
+        import android.accounts.OperationCanceledException;
+        import android.content.AbstractThreadedSyncAdapter;
+        import android.content.ContentProviderClient;
+        import android.content.Context;
 
 /**
  * Base synchronization adapter for ownCloud designed to be subclassed for different
  * resource types, like FileSync, ConcatsSync, CalendarSync, etc..
- * 
+ *
  * Implements the standard {@link AbstractThreadedSyncAdapter}.
  */
 public abstract class AbstractOwnCloudSyncAdapter extends
@@ -103,9 +107,9 @@ public abstract class AbstractOwnCloudSyncAdapter extends
         mClient = OwnCloudClientManagerFactory.getDefaultSingleton().
                 getClientFor(ocAccount, getContext());
     }
-    
+
     protected OwnCloudClient getClient() {
         return mClient;
     }
-    
+
 }

@@ -1,3 +1,5 @@
+package weddingmemories.ash.memories;
+
 /**
  *   ownCloud Android client application
  *
@@ -19,24 +21,25 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package com.owncloud.android.syncadapter;
 
-import android.app.Service;
-import android.content.Intent;
 import android.os.IBinder;
+
+        import android.app.Service;
+        import android.content.Intent;
+        import android.os.IBinder;
 
 /**
  * Background service for synchronizing remote files with their local state.
- * 
+ *
  * Serves as a connector to an instance of {@link FileSyncAdapter}, as required by standard Android APIs.
  */
 public class FileSyncService extends Service {
-    
+
     // Storage for an instance of the sync adapter
     private static FileSyncAdapter sSyncAdapter = null;
     // Object to use as a thread-safe lock
     private static final Object sSyncAdapterLock = new Object();
-    
+
     /*
      * {@inheritDoc}
      */
@@ -54,7 +57,7 @@ public class FileSyncService extends Service {
      */
     @Override
     public IBinder onBind(Intent intent) {
-       return sSyncAdapter.getSyncAdapterBinder();
+        return sSyncAdapter.getSyncAdapterBinder();
     }
-    
+
 }
