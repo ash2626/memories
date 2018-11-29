@@ -12,7 +12,6 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.owncloud.android.lib.common.OwnCloudClient;
-import com.owncloud.android.lib.common.OwnCloudCredentialsFactory;
 import com.owncloud.android.lib.common.network.NetworkUtils;
 
 
