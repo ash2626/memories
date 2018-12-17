@@ -1,10 +1,8 @@
 <resources>
     <string name="app_name">memories</string>
     <string name="title_activity_main">Memories</string>
-    <string name="server_base_url">http://192.168.1.6/owncloud</string>
-    <string name="username">ash2626</string>
-    <string name="password">Sycam0re</string>
     <string name="eventID">John + Joanne 2015</string>
     <string name="pref_previously_started">false</string>
+    <string name="title_activity_viewer">Viewer</string>
 
 </resources>

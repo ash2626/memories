@@ -1,13 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 23
+    compileSdkVersion 28
     buildToolsVersion '28.0.3'
-
     defaultConfig {
-        applicationId "weddingmemories.ash.memories"
+        applicationId 'memories.ash.memories'
         minSdkVersion 22
-        targetSdkVersion 23
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
     }
@@ -17,12 +16,22 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    productFlavors {
+    }
+    packagingOptions{
+        exclude 'META-INF/DEPENDENCIES'
+    }
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.github.owncloud:android-library:oc-android-library-0.9.24'
-    implementation 'com.android.support:appcompat-v7:23.4.0'
-    implementation 'com.android.support:design:23.4.0'
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    //implementation 'com.android.support:appcompat-v7:26.0.0'
+    //implementation 'com.android.support:design:26.4.0'
+    implementation "androidx.legacy:legacy-support-core-utils:1.0.0"
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-alpha2'
+    implementation 'com.google.android.material:material:1.1.0-alpha02'
+    implementation 'com.android.volley:volley:1.1.1'
+    implementation 'com.google.android.gms:play-services-auth:16.0.1'
+    implementation 'com.google.photos.library:google-photos-library-client:1.1.0'
     testImplementation 'junit:junit:4.12'
 }
