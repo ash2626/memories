@@ -7,20 +7,24 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.tasks.Task;
-import com.google.api.gax.rpc.ApiException;
+import com.google.api.gax.core.FixedCredentialsProvider;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.common.collect.ImmutableList;
+import com.google.photos.library.v1.PhotosLibraryClient;
+import com.google.photos.library.v1.PhotosLibrarySettings;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.util.List;
 
 import androidx.appcompat.app.AppCompatActivity;
 import memories.R;
 
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity {
 
     private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
 
@@ -28,43 +32,61 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static final int MEDIA_TYPE_VIDEO = 2;
     private MyObserver instPhotoObs;
     private static final String TAG = null;
-    // This account must exists on the server side
-    private String mServerUri;
-    private String mUser;
-    private String mPass;
-    private GoogleSignInClient mGoogleSignInClient;
-    private int RC_SIGN_IN;
+    //PhotosLibrarySettings settings;
+    //private static final java.io.File DATA_STORE_DIR = new java.io.File(MainActivity.class.getResource("/").getPath(), "client_id.json");
+
+    private static final List<String> REQUIRED_SCOPES =
+            ImmutableList.of(
+                    "https://www.googleapis.com/auth/photoslibrary.readonly",
+                    "https://www.googleapis.com/auth/photoslibrary.appendonly");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Configure sign-in to request the user's ID, email address, and basic
-        // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
+        // Set up the Photos Library Client that interacts with the API
 
-        // Build a GoogleSignInClient with the options specified by gso.
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        String credentialsPath = "C:\\Users\\ash\\StudioProjects\\memories\\app\\src\\main\\java\\com\\ash\\memories\\client_id.json";
 
-        findViewById(R.id.sign_in_button).setOnClickListener(this);
+
+
+        try{
+            //settings = PhotosLibrarySettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(GoogleCredentials.fromStream((new FileInputStream(file))))).build();
+            //PhotosLibraryClient photosLibraryClient = PhotosLibraryClient.initialize(settings);
+            PhotosLibraryClient client =
+                    PhotosLibraryClientFactory.createClient(credentialsPath, REQUIRED_SCOPES);
+            Log.d("MemoriesApp", "Photos Library Initialised");
+        }catch (IOException e)
+        {
+            Log.d("MemoriesApp", "IOException PhotosLibraryClient: " + e);
+        }catch (GeneralSecurityException e)
+        {
+            Log.d("MemoriesApp", "GeneralSecurityException PhotosLibraryClient: " + e);
+        }
 
         //Create photo observer
         instPhotoObs = new MyObserver(this.getApplicationContext());
         Log.d("MemoriesApp", "onCreate Add ContentObserver");
         this.getApplicationContext().getContentResolver().registerContentObserver(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, false, instPhotoObs);
 
-        Log.d("MemoriesApp", "onCreate finished, ownCloud setup complete");
+        Log.d("MemoriesApp", "onCreate finished");
     }
 
     @Override
     protected void onStart() {
         super.onStart();
 
-        // Check for existing Google Sign In account, if the user is already signed in
-        // the GoogleSignInAccount will be non-null.
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-        updateUI(account);
+
+
+        Intent takePictures = new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA);
+
+        /*fileUri = getOutputMediaFileUri(MEDIA_TYPE_IMAGE); // create a file to save the image
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name*/
+
+        Log.d("MemoriesApp", "Pictures Started");
+        // start the image capture Intent
+        startActivity(takePictures);
     }
 
     @Override
@@ -74,16 +96,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         this.getApplicationContext().getContentResolver().unregisterContentObserver(instPhotoObs);
 
         Log.d("MemoriesApp", "onDestroy Remove ContentObserver");
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        // Check for existing Google Sign In account, if the user is already signed in
-        // the GoogleSignInAccount will be non-null.
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-        updateUI(account);
     }
 
     @Override
@@ -105,62 +117,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
-        if (requestCode == RC_SIGN_IN) {
-            // The Task returned from this call is always completed, no need to attach
-            // a listener.
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            handleSignInResult(task);
-        }
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.sign_in_button:
-                signIn();
-                break;
-            // ...
-        }
-    }
-
-    public void updateUI(GoogleSignInAccount account) {
-        if (account != null)
-        {
-            Intent takepictures = new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA);
-
-        /*fileUri = getOutputMediaFileUri(MEDIA_TYPE_IMAGE); // create a file to save the image
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name*/
-
-            Log.d("MemoriesApp", "Pictures Started");
-            // start the image capture Intent
-            startActivity(takepictures);
-        }
-
-    }
-
-    private void signIn() {
-        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, RC_SIGN_IN);
-    }
-
-    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
-        try {
-            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
-
-            // Signed in successfully, show authenticated UI.
-            updateUI(account);
-        } catch (ApiException e) {
-            // The ApiException status code indicates the detailed failure reason.
-            // Please refer to the GoogleSignInStatusCodes class reference for more information.
-            Log.w("MemoriesApp", "signInResult:failed code=" + e.getStatusCode());
-            updateUI(null);
-        }
     }
 }
